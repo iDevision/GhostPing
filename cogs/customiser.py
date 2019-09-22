@@ -21,7 +21,7 @@ class Customiser(commands.Cog):
         """Make a customiser"""
         query = "INSERT INTO storage (id, guild_message, dm_message) VALUES ($1,$2,$3);"
 
-        return await self.bot.db.execute(query, member.id, "{{me}}, you were ghost pinged in {{message.guild}} inside a message from {{message.author}}.", "You were ghost pinged in a message from {{message.author}}.")
+        return await self.bot.db.execute(query, member.id, "{{me}}, you were ghost pinged inside a message from {{message.author}}.", "You were ghost pinged in a message from {{message.author}} inside {{message.guild}}.")
 
     async def update_customiser(self, member: typing.Union[discord.Member, discord.User], setting, content):
         """Update a customiser"""
@@ -69,14 +69,14 @@ class Customiser(commands.Cog):
             raise commands.BadArgument("Identifier %s not valid. Choose from `dm_message` or `guild_message`" % setting.lower())
         
         customiser = await self.get_customiser(ctx.author)
-        
+
         if not customiser:
             await self.make_customiser(ctx.author)
 
         if setting.lower() == "dm_message":
-            content = "You were ghost pinged in {{message.guild}} inside a message from {{message.author}}."
+            content = "You were ghost pinged in a message from {{message.author}} inside {{message.guild}}."
         else:
-            content = "{{me}}, you were ghost pinged in a message from {{message.author}}."
+            content = "{{me}}, you were ghost pinged inside a message from {{message.author}}."
 
         await self.update_customiser(ctx.author, setting, content)
 
