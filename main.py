@@ -26,7 +26,7 @@ class Bot(commands.Bot):
 
     async def on_connect(self):
         """On connect"""
-        self.db = await asyncpg.create_pool(database="ghost", user="postgres", password=os.environ.get("PG_PASSWORD"))
+        self.db = await asyncpg.create_pool(database="ghost", user="logan", password=os.environ.get("PG_PASSWORD"))
 
         self.load_extension("jishaku")
         self.load_from_folder("cogs")
