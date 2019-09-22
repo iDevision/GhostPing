@@ -128,8 +128,7 @@ class Pings(commands.Cog):
                 if not storage:
                     await message.channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
-                    message = await self.format_msg(ctx, storage[0]["guild_message"], message[0])
-                    await message.channel.send(messgae)
+                    await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
         
         del self.bot._ping_cache[message[0].id]
         
@@ -160,8 +159,7 @@ class Pings(commands.Cog):
                 if not storage:
                     await message.channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
-                    message = await self.format_msg(ctx, storage[0]["guild_message"], message[0])
-                    await message.channel.send(messgae)
+                    await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
         
         del self.bot._ping_cache[message[0].id]
 
