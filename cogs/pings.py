@@ -40,6 +40,18 @@ class Pings(commands.Cog):
 
         return await ctx.send("Opted in to ghost ping detector." if toggle else "Opted out to ghost ping detector.")
 
+    @commands.command(name="tracking")
+    async def tracking_(self, ctx):
+        """See what messages with your mention i am tracking"""
+        tracking = [m[0] for m in self.bot._ping_cache.values() if ctx.author.id in [u.id for u in m[1]]]
+
+        embed = discord.Embed(title="Currently Tracking", colour=discord.Colour.blue(), timestamp=ctx.message.created_at)
+
+        for message in tracking:
+            embed.add_field(name=f"From {message.author}", value=message.content, inline=False)
+        
+        return await ctx.send(embed=embed)
+
     async def clean_mentions(self, author: typing.Union[discord.Member, discord.User], mentions: list, edit: bool, new=None):
         """Clean up the message mention list"""
         cleaned = []
@@ -100,7 +112,7 @@ class Pings(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """Ping detector"""
-        if not message.mentions:
+        if not message.mentions or message.author == self.bot.user:
             return
         
         self.bot._ping_cache[message.id] = (message, message.mentions)
@@ -129,6 +141,10 @@ class Pings(commands.Cog):
                     formatted = await self.format_msg(ctx, user, storage[0]["dm_message"], message[0])
                     await user.send(formatted)
                 
+                del self.bot._ping_cache[message[0].id]
+
+                return
+
             except discord.Forbidden:
                 if not storage:
                     await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
@@ -161,6 +177,10 @@ class Pings(commands.Cog):
                 else:
                     formatted = await self.format_msg(ctx, user, storage[0]["dm_message"], message[0])
                     await user.send(formatted)
+                
+                del self.bot._ping_cache[message[0].id]
+
+                return
             except discord.Forbidden:
                 if not storage:
                     await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
