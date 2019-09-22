@@ -40,6 +40,8 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         """On ready"""
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="ghost help | Looking for some pings"))
+
         print("Connected")
 
 if __name__ == "__main__":
