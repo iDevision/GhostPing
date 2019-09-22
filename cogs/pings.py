@@ -46,9 +46,9 @@ class Pings(commands.Cog):
 
         if not edit:
             for mention in mentions:
-                '''if mention.id == author.id:
+                if mention.id == author.id:
                     continue
-                '''
+                
                 toggle = await self.get_toggle(mention)
 
                 if not toggle or toggle[0]["toggle"] is False:
@@ -57,7 +57,7 @@ class Pings(commands.Cog):
                 cleaned.append(mention)
         else:
             for mention in mentions:
-                if mention.id in [m["id"] for m in new]: #or mention.id == author.id:
+                if mention.id in [m["id"] for m in new] or mention.id == author.id:
                     continue
 
                 else:
