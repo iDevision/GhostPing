@@ -70,28 +70,32 @@ class Pings(commands.Cog):
         
         return cleaned
 
-    async def format_msg(self, ctx, message, actual: discord.Message):
+    async def format_msg(self, ctx, user, message, actual: discord.Message):
         """Format a custom message"""
-        valid_options = ["message.author", "message.content", "message.guild"]
+        valid_options = ["message.author", "message.content", "message.guild", "me"]
         
-        formated = []
+        formatted = []
 
         for word in message.split(" "):
-            if word.startswith("{{") and word.endswith("}}"):
-                word = word[2:-2]
+            if word.strip().startswith("{{") and word.strip().endswith("}}") or word[:-1].endswith("}}"):
+                if word[:-1].endswith("}}"):
+                    word = word[2:-3]
+                else:
+                    word = word[2:-2]
 
                 if word not in valid_options:
                     raise commands.BadArgument("Identifier %s is not valid." % word)
                 
-                print(word)
                 if word == "message.content":
                     word = await commands.clean_content().convert(ctx, str(getattr(actual, word.split(".")[1])))
+                elif word == "me":
+                    word = user.mention
                 else:
                     word = str(getattr(actual, word.split(".")[1]))
             
-            formated.append(word)
+            formatted.append(word)
         
-        return ' '.join(formated)
+        return ' '.join(formatted)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -122,13 +126,15 @@ class Pings(commands.Cog):
                 if not storage:
                     await user.send(f"You were ghost pinged in {guild} inside a message from {message[0].author}")
                 else:
-                    message = await self.format_msg(ctx, storage[0]["dm_message"], message[0])
-                    await user.send(message)
+                    formatted = await self.format_msg(ctx, user, storage[0]["dm_message"], message[0])
+                    await user.send(formatted)
+                
             except discord.Forbidden:
                 if not storage:
                     await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
-                    await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
+                    formatted = await self.format_msg(ctx, user, storage[0]["guild_message"], message[0])
+                    await message[0].channel.send(formatted)
         
         del self.bot._ping_cache[message[0].id]
         
@@ -153,13 +159,14 @@ class Pings(commands.Cog):
                 if not storage:
                     await user.send(f"You were ghost pinged in {channel.guild} inside a message from {message[0].author}")
                 else:
-                    message = await self.format_msg(ctx, storage[0]["dm_message"], message[0])
-                    await user.send(message)
+                    formatted = await self.format_msg(ctx, user, storage[0]["dm_message"], message[0])
+                    await user.send(formatted)
             except discord.Forbidden:
                 if not storage:
                     await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
-                    await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
+                    formatted = await self.format_msg(ctx, user, storage[0]["guild_message"], message[0])
+                    await message[0].channel.send(formatted)
         
         del self.bot._ping_cache[message[0].id]
 

@@ -8,7 +8,7 @@ class Customiser(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.identifiers = ["message.author", "message.content", "message.guild"]
+        self.identifiers = ["message.author", "message.content", "message.guild", "me"]
         self.customisers = ["dm_message", "guild_message"]
     
     async def get_customiser(self, member: typing.Union[discord.Member, discord.User]):
@@ -21,7 +21,7 @@ class Customiser(commands.Cog):
         """Make a customiser"""
         query = "INSERT INTO storage (id, guild_message, dm_message) VALUES ($1,$2,$3);"
 
-        return await self.bot.db.execute(query, member.id, "You were ghost pinged in {{guild}} inside a message from {{message.author}}.", "You were ghost pinged in a message from {{message.author}}.")
+        return await self.bot.db.execute(query, member.id, "{{me}}, you were ghost pinged in {{message.guild}} inside a message from {{message.author}}.", "You were ghost pinged in a message from {{message.author}}.")
 
     async def update_customiser(self, member: typing.Union[discord.Member, discord.User], setting, content):
         """Update a customiser"""
@@ -57,6 +57,26 @@ class Customiser(commands.Cog):
 
         if not customiser:
             await self.make_customiser(ctx.author)
+
+        await self.update_customiser(ctx.author, setting, content)
+
+        return await ctx.send(f"Your customiser for {setting.lower()} has been updated to {content}.")
+    
+    @customiser_.command(name="reset")
+    async def reset_(self, ctx, setting):
+        """Reset a setting to default"""
+        if setting.lower() not in self.customisers:
+            raise commands.BadArgument("Identifier %s not valid. Choose from `dm_message` or `guild_message`" % setting.lower())
+        
+        customiser = await self.get_customiser(ctx.author)
+        
+        if not customiser:
+            await self.make_customiser(ctx.author)
+
+        if setting.lower() == "dm_message":
+            content = "You were ghost pinged in {{message.guild}} inside a message from {{message.author}}."
+        else:
+            content = "{{me}}, you were ghost pinged in a message from {{message.author}}."
 
         await self.update_customiser(ctx.author, setting, content)
 
