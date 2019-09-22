@@ -47,8 +47,11 @@ class Pings(commands.Cog):
 
         embed = discord.Embed(title="Currently Tracking", colour=discord.Colour.blue(), timestamp=ctx.message.created_at)
 
-        for message in tracking:
-            embed.add_field(name=f"From {message.author}", value=message.content, inline=False)
+        if tracking:
+            for message in tracking:
+                embed.add_field(name=f"From {message.author}", value=message.content, inline=False)
+        else:
+            embed.description = "Not tracking anything with your mention."
         
         return await ctx.send(embed=embed)
 
