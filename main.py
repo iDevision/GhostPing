@@ -36,4 +36,4 @@ class Bot(commands.Bot):
         print("Connected")
 
 if __name__ == "__main__":
-    Bot().run(os.environ.get("GHOST_TOKEN") reconnect=True)
+    Bot().run(os.environ.get("GHOST_TOKEN"), reconnect=True)
