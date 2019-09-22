@@ -126,7 +126,7 @@ class Pings(commands.Cog):
                     await user.send(message)
             except discord.Forbidden:
                 if not storage:
-                    await message.channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
+                    await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
                     await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
         
@@ -157,7 +157,7 @@ class Pings(commands.Cog):
                     await user.send(message)
             except discord.Forbidden:
                 if not storage:
-                    await message.channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
+                    await message[0].channel.send(f"{user.mention}, you were ghost pinged by {message[0].author}")
                 else:
                     await message[0].channel.send(await self.format_msg(ctx, storage[0]["guild_message"], message[0]))
         
