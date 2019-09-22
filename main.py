@@ -26,7 +26,14 @@ class Bot(commands.Bot):
 
     async def on_connect(self):
         """On connect"""
-        self.db = await asyncpg.create_pool(database="ghost", user="logan", password=os.environ.get("PG_PASSWORD"))
+        try:
+            self.db = await asyncpg.create_pool(database="ghost", user="logan", password=os.environ.get("PG_PASSWORD"))
+        except asyncpg.InvalidCatalogNameError:
+            c = await asyncpg.connect(database="logan", user="logan")
+
+            await c.execute("CREATE DATABASE ghost OWNER logan")
+
+            self.db = await asyncpg.create_pool(database="ghost", user="logan", password=os.environ.get("PG_PASSWORD"))
 
         self.load_extension("jishaku")
         self.load_from_folder("cogs")
