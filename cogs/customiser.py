@@ -29,7 +29,24 @@ class Customiser(commands.Cog):
 
         return await self.bot.db.execute(query, content, member.id)
 
-    @commands.group(name="customiser", invoke_without_command=True)
+    @commands.command(name="key")
+    async def key_(self, ctx):
+        """Get a key for the customiser parser"""
+        embed = discord.Embed(title="Customiser Key", colour=discord.Colour.blue())
+        keys = {
+            "{{message.author}}": "The tag for the message author. i.e. Lgan#4676",
+            "{{message.guild}}": "The guild in which you were pinged, useful for dm_message.",
+            "{{message.content}}": "The message content. Note any mentions will not ping them, if above 1000 characters it will be ommited.",
+            "{{message.timestamp}}": "When the message was sent.",
+            "{{me}}": "Will tag you. i.e. @Lgan#4676, mainly for guild_message."
+        }
+
+        for token, desc in keys.items():
+            embed.add_field(name=token, value=desc, inline=False)
+        
+        return await ctx.send(embed=embed)
+        
+    @commands.group(name="customiser", invoke_without_command=True, aliases=["customise", "customizer", "customize"])
     async def customiser_(self, ctx):
         """Group parent, show your current settings."""
         storage = await self.get_customiser(ctx.author)

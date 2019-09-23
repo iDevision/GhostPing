@@ -1,5 +1,7 @@
 import typing
 
+from datetime import datetime
+
 import discord
 from discord.ext import commands
 
@@ -44,6 +46,10 @@ class Pings(commands.Cog):
     async def tracking_(self, ctx):
         """See what messages with your mention i am tracking"""
         tracking = [m[0] for m in self.bot._ping_cache.values() if ctx.author.id in [u.id for u in m[1]]]
+        toggle = await self.get_toggle(ctx.author)
+
+        if not toggle or toggle[0]["toggle"] is False:
+            return await ctx.send("You are not opted in. To begin tracking use `ghost toggle`.")
 
         embed = discord.Embed(title="Currently Tracking", colour=discord.Colour.blue(), timestamp=ctx.message.created_at)
 
@@ -87,7 +93,7 @@ class Pings(commands.Cog):
 
     async def format_msg(self, ctx, user, message, actual: discord.Message):
         """Format a custom message"""
-        valid_options = ["message.author", "message.content", "message.guild", "me"]
+        valid_options = ["message.author", "message.content", "message.guild", "message.timestamp", "me"]
         
         formatted = []
 
@@ -105,6 +111,8 @@ class Pings(commands.Cog):
                     word = await commands.clean_content().convert(ctx, str(getattr(actual, word.split(".")[1])))
                 elif word == "me":
                     word = user.mention
+                elif word == "message.timestamp":
+                    word = actual.created_at.ctime()
                 else:
                     word = str(getattr(actual, word.split(".")[1]))
             

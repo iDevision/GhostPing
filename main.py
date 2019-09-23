@@ -11,6 +11,8 @@ class Bot(commands.Bot):
         super().__init__(command_prefix="ghost ")
 
         self._ping_cache = {}
+        
+        self.remove_command("help")
     
     def load_from_folder(self, folder):
         """Load extensions from folder"""
