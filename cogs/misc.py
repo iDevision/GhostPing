@@ -64,7 +64,7 @@ class Misc(commands.Cog):
             for cat, desc in fields.items():
                 embed.add_field(name=cat, value=desc, inline=False)
         else:
-            categories = {**dict.fromkeys(["customiser","customizer"], self.bot.get_cog("Customiser")), "misc": self.bot.get_cog("Misc"), "pings": self.bot.get_cog("Pings")}
+            categories = {**dict.fromkeys(["customiser","customizer"], self.bot.get_cog("Customiser")), "misc": self.bot.get_cog("Misc"), "pings": self.bot.get_cog("Pings"), "blocks": self.bot.get_cog("Blocks")}
 
             if category.lower() not in categories.keys():
                 return await ctx.send("That category does not exist.")
