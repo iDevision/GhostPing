@@ -27,6 +27,12 @@ class Pings(commands.Cog):
 
         return await self.bot.db.execute(query, toggle, member.id)
 
+    async def check_block(self, object):
+        """Check a block"""
+        fetch = await self.bot.cogs["Blocks"].get_block(object)
+
+        return False if not fetch else fetch["id"]
+
     @commands.command(name="toggle")
     async def toggle_(self, ctx):
         """Toggle ping detection off/on"""
@@ -131,7 +137,7 @@ class Pings(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
         """Detect if a message with pings was deleted"""
-        if not payload.message_id in self.bot._ping_cache.keys():
+        if payload.message_id not in self.bot._ping_cache.keys():
             return
         
         message = self.bot._ping_cache[payload.message_id]
@@ -140,6 +146,15 @@ class Pings(commands.Cog):
         clean_mentions = await self.clean_mentions(message[0].author, message[1], False)
 
         for user in clean_mentions:
+            user_blocks = await self.bot.cogs["Blocks"].get_blocks(user)
+            user_blocks = [item["id"] for item in user_blocks]
+
+            if payload.channel_id in user_blocks:
+                return
+            
+            if message[0].author.id in user_blocks:
+                return
+            
             print(f"Messaging {user}")
 
             storage = await self.bot.db.fetch("SELECT * FROM storage WHERE id = $1;", user.id)
