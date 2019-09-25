@@ -58,7 +58,8 @@ class Misc(commands.Cog):
             fields = {
                 "Pings": "GhostPing's main commands.",
                 "Customiser": "Customiser commands, set custom messages.",
-                "Misc": "Miscellaneous commands."
+                "Misc": "Miscellaneous commands.",
+                "Blocks": "Block channels or users"
             }
 
             for cat, desc in fields.items():
