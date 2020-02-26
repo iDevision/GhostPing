@@ -111,16 +111,16 @@ class Pings(commands.Cog):
                     word = word[2:-2]
 
                 if word not in valid_options:
-                    raise commands.BadArgument("Identifier %s is not valid." % word)
-                
-                if word == "message.content":
-                    word = await commands.clean_content().convert(ctx, str(getattr(actual, word.split(".")[1])))
-                elif word == "me":
-                    word = user.mention
-                elif word == "message.timestamp":
-                    word = actual.created_at.ctime()
+                    word = word
                 else:
-                    word = str(getattr(actual, word.split(".")[1]))
+                    if word == "message.content":
+                        word = await commands.clean_content().convert(ctx, str(getattr(actual, word.split(".")[1])))
+                    elif word == "me":
+                        word = user.mention
+                    elif word == "message.timestamp":
+                        word = actual.created_at.ctime()
+                    else:
+                        word = str(getattr(actual, word.split(".")[1]))
             
             formatted.append(word)
         
